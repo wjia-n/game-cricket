@@ -224,7 +224,7 @@ class _MenuScreenState extends State<MenuScreen> {
                         onTap: () async {
                           widget.audio.click();
                           await SharePlus.instance.share(
-                            const ShareParams(
+                            ShareParams(
                               text:
                                   'Play Cricket with me! https://play.google.com/store/apps/details?id=com.gameswajiha.cricket',
                             ),

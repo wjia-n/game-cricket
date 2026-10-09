@@ -116,23 +116,6 @@ class CricketAudio {
     return out;
   }
 
-  List<double> _noise(double secs,
-      {double attack = 0.02, double decay = 2.2, double brightness = 0.5}) {
-    final n = (_rate * secs).round();
-    final out = List<double>.filled(n, 0);
-    double prev = 0;
-    for (int i = 0; i < n; i++) {
-      final w = _rand.nextDouble() * 2 - 1;
-      // One-pole lowpass: brightness 0 = dark rumble, 1 = bright hiss.
-      prev = prev * (1 - brightness) + w * brightness;
-      final t = i / n;
-      final a = (t / attack).clamp(0.0, 1.0);
-      final d = pow(1 - t, decay).toDouble();
-      out[i] = prev * a * d;
-    }
-    return out;
-  }
-
   List<double> _batCrack() {
     // Leather on willow: sharp snap + woody knock + a little air.
     final n = (_rate * 0.22).round();

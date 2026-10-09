@@ -151,7 +151,7 @@ class PavilionButton extends StatelessWidget {
           border: Border.all(color: t.cream.withValues(alpha: 0.65), width: 2),
           boxShadow: const [
             BoxShadow(
-                color: shadow, offset: Offset(0, 5), blurRadius: 10),
+                color: Pavilion.shadow, offset: Offset(0, 5), blurRadius: 10),
           ],
         ),
         alignment: Alignment.center,
@@ -182,7 +182,7 @@ class ScoreboardCard extends StatelessWidget {
         color: theme.ink.withValues(alpha: 0.88),
         border: Border.all(color: theme.accent, width: 2),
         boxShadow: const [
-          BoxShadow(color: shadow, offset: Offset(0, 5), blurRadius: 10),
+          BoxShadow(color: Pavilion.shadow, offset: Offset(0, 5), blurRadius: 10),
         ],
       ),
       child: Column(
