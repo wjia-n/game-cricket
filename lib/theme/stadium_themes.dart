@@ -147,7 +147,7 @@ class StadiumThemes {
     ),
     StadiumThemeDef(
       id: 'alpine',
-      name: 'Alpine Field',
+      name: 'Summit Field',
       skyTop: Color(0xFF5E9BD8),
       skyBottom: Color(0xFFE8F3FC),
       grassLight: Color(0xFF5C9A52),

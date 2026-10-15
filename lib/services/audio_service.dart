@@ -18,6 +18,9 @@ import 'package:audioplayers/audioplayers.dart';
 ///   resumes exactly where it left off instead of restarting or dying.
 /// - Every public method catches player errors; audio can never crash the app.
 class CricketAudio {
+  /// Per-game pitch character (cricket): 1.32x. Makes SFX unique.
+  static const double _pitchMul = 1.320;
+
   static const int _rate = 22050;
   final AudioPlayer _sfx = AudioPlayer();
   final AudioPlayer _music = AudioPlayer();
@@ -104,6 +107,8 @@ class CricketAudio {
 
   List<double> _tone(double freq, double secs,
       {double freqEnd = 0, double attack = 0.02, double harmonics = 0.25}) {
+    freq *= _pitchMul;
+    freqEnd *= _pitchMul;
     final n = (_rate * secs).round();
     final out = List<double>.filled(n, 0);
     for (int i = 0; i < n; i++) {
@@ -216,45 +221,51 @@ class CricketAudio {
       _cache.putIfAbsent(key, () => _wav(build()));
 
   Uint8List _menuBytes() => _clip('music_menu', () {
-        // Lazy summer-afternoon: warm G – C – D – Em pads, 16s loop.
+        // D waltz 5 – 0 – 3 – 4, 12s loop. Unique to cricket.
         final seq = [
-          [196.0, 246.94, 293.66], // G
-          [261.63, 329.63, 392.0], // C
-          [293.66, 369.99, 440.0], // D
-          [164.81, 196.0, 246.94], // Em
+          [246.94, 293.66, 369.99],
+          [146.83, 184.99, 220.00],
+          [195.99, 246.94, 293.66],
+          [220.00, 277.18, 329.62]
         ];
         final out = <double>[];
         for (final chord in seq) {
-          out.addAll(_padChord(chord, 4.0));
+          // Waltz: bass on 1, chords on 2 and 3
+          final bass = _tone(chord[0] / 2, 0.8, harmonics: 0.3);
+          final ch1 = _padChord([chord[1], chord[2]], 0.7);
+          final ch2 = _padChord([chord[1], chord[2]], 0.7);
+          out.addAll(bass);
+          final gap1 = List<double>.filled((_rate * 0.2).round(), 0);
+          out.addAll(gap1);
+          out.addAll(ch1);
+          final gap2 = List<double>.filled((_rate * 0.2).round(), 0);
+          out.addAll(gap2);
+          out.addAll(ch2);
+          final gap3 = List<double>.filled((_rate * 0.2).round(), 0);
+          out.addAll(gap3);
         }
         return out;
       });
 
+
   Uint8List _gameBytes() => _clip('music_game', () {
-        // Match-day pulse: soft drum-ish thumps + bright plucks, 12s loop.
-        final drone = _padChord([98.0, 146.83], 12.0);
-        final n = (_rate * 12).round();
-        final out = List<double>.from(drone);
-        final plucks = [
-          392.0, 523.25, 587.33, 523.25, 440.0, 392.0, 329.63, 392.0
-        ];
-        for (int k = 0; k < plucks.length; k++) {
-          final start = (n * k / plucks.length).round();
-          final tone = _tone(plucks[k], 0.45, harmonics: 0.35);
-          for (int i = 0; i < tone.length && start + i < n; i++) {
-            out[start + i] += tone[i] * 0.32;
-          }
+        // D arpeggiated 5 – 0 – 3 – 4, 16s loop. Unique to cricket.
+        final notes = [246.94, 293.66, 369.99, 293.66, 146.83, 184.99, 220.00, 184.99, 195.99, 246.94, 293.66, 246.94, 220.00, 277.18, 329.62, 277.18];
+        final out = <double>[];
+        final noteLen = 16.0 / notes.length;
+        for (final n in notes) {
+          out.addAll(_tone(n, noteLen * 0.9, harmonics: 0.3));
+          final gap = List<double>.filled((_rate * noteLen * 0.1).round(), 0);
+          out.addAll(gap);
         }
-        // Gentle "ball on bat" pulse every 3s.
-        for (int k = 0; k < 4; k++) {
-          final start = (n * k / 4).round();
-          final thump = _tone(110, 0.18, harmonics: 0.4);
-          for (int i = 0; i < thump.length && start + i < n; i++) {
-            out[start + i] += thump[i] * 0.25;
-          }
+        // Soft pad underneath
+        final pad = _padChord([246.94, 293.66, 369.99], 16.0);
+        for (int i = 0; i < out.length && i < pad.length; i++) {
+          out[i] += pad[i] * 0.3;
         }
         return out;
       });
+
 
   // ------------------------------------------------------------------ SFX
   Future<void> _play(Uint8List bytes) async {
