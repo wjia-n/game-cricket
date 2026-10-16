@@ -3,6 +3,7 @@ import '../services/audio_service.dart';
 import '../services/settings_service.dart';
 import '../theme/county_pavilion.dart';
 import '../theme/stadium_themes.dart';
+import '../transfer/transfer_ui.dart';
 
 /// Settings: music / SFX toggles, volume, and stats reset.
 class SettingsScreen extends StatefulWidget {
@@ -47,6 +48,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 22, vertical: 14),
               children: [
+              TransferSaveTile(gameSlug: 'cricket'),
                 ScoreboardCard(
                   theme: t,
                   title: 'Audio',
