@@ -560,14 +560,6 @@ class _GroundCard extends StatelessWidget {
               ),
             ],
           ),
-          if (!isPro)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(
-                '🔒 ${StadiumThemes.all.length - StadiumThemes.freeThemeIds.length} more grounds in PRO',
-                style: Pavilion.label(12, theme: theme),
-              ),
-            ),
         ],
       ),
     );
